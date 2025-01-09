@@ -74,7 +74,7 @@ BOOL CPGDef::Load(IReader& F)
             (*it)->m_Time1 	= F.r_float();
             (*it)->m_Flags.assign	(F.r_u32());
         }
-    }else{  //.??? óáðàòü ÷åðåç íåêîòîðîå âðåìÿ
+    }else{  //.??? ÑƒÐ±Ñ€Ð°Ñ‚ÑŒ Ñ‡ÐµÑ€ÐµÐ· Ð½ÐµÐºÐ¾Ñ‚Ð¾Ñ€Ð¾Ðµ Ð²Ñ€ÐµÐ¼Ñ
         R_ASSERT		(F.find_chunk(PGD_CHUNK_EFFECTS2));
         m_Effects.resize(F.r_u32());
         for (EffectIt it=m_Effects.begin(); it!=m_Effects.end(); it++){
@@ -266,7 +266,7 @@ void OnGroupParticleDead(void* owner, u32 param, PAPI::Particle& m, u32 idx)
     	PG->items[param].StartFreeChild			(PE,*eff->m_OnDeadChildName,m);
 }
 //------------------------------------------------------------------------------
-struct zero_vis_pred : public std::unary_function<IRender_Visual*, bool>
+struct zero_vis_pred
 {
 	bool operator()(const IRender_Visual* x){ return x==0; }
 };
