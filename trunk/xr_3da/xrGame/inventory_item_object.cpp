@@ -39,12 +39,12 @@ LPCSTR CInventoryItemObject::NameShort		()
 {
 	return						(CInventoryItem::NameShort());
 }
-/*
+
 LPCSTR CInventoryItemObject::NameComplex	()
 {
 	return						(CInventoryItem::NameComplex());
 }
-*/
+
 
 void				CInventoryItemObject::Hit					(SHit* pHDS)
 {

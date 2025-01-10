@@ -59,6 +59,7 @@ public:
 	virtual void							load					(IReader &input_packet);
 
 	virtual LPCSTR							Name					();
+	virtual LPCSTR							NameComplex				();
 
 protected:
 	void									UpdateActiveContacts	();

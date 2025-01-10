@@ -192,7 +192,7 @@ void CHUDTarget::Render()
 					{
 						if (fuzzyShowInfo>0.5f){
 							F->SetColor	(subst_alpha(C,u8(iFloor(255.f*(fuzzyShowInfo-0.5f)*2.f))));
-							F->OutNext	("%s",l_pI->Name/*Complex*/());
+							F->OutNext	("%s",l_pI->NameComplex());
 						}
 						fuzzyShowInfo += SHOW_INFO_SPEED*Device.fTimeDelta;
 					}
