@@ -17,6 +17,14 @@
 #include "../CustomOutfit.h"
 
 
+void CUIInventoryWnd::Activate_Artefact()
+{
+	CActor *pActor							= smart_cast<CActor*>(Level().CurrentEntity());
+	if(!pActor)								return;
+
+	SendEvent_ActivateArtefact				(CurrentIItem());
+};
+
 void CUIInventoryWnd::EatItem(PIItem itm)
 {
 	SetCurrentItem							(NULL);
@@ -31,7 +39,7 @@ void CUIInventoryWnd::EatItem(PIItem itm)
 #include "../Antirad.h"
 void CUIInventoryWnd::ActivatePropertiesBox()
 {
-	// Флаг-признак для невлючения пункта контекстного меню: Dreess Outfit, если костюм уже надет
+	// Р¤Р»Р°Рі-РїСЂРёР·РЅР°Рє РґР»СЏ РЅРµРІР»СЋС‡РµРЅРёСЏ РїСѓРЅРєС‚Р° РєРѕРЅС‚РµРєСЃС‚РЅРѕРіРѕ РјРµРЅСЋ: Dreess Outfit, РµСЃР»Рё РєРѕСЃС‚СЋРј СѓР¶Рµ РЅР°РґРµС‚
 	bool bAlreadyDressed = false; 
 
 		
@@ -41,6 +49,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	CAntirad*			pAntirad			= smart_cast<CAntirad*>			(CurrentIItem());
 	CEatableItem*		pEatableItem		= smart_cast<CEatableItem*>		(CurrentIItem());
 	CCustomOutfit*		pOutfit				= smart_cast<CCustomOutfit*>	(CurrentIItem());
+	CArtefact*			pArtefact			= smart_cast<CArtefact*>		(CurrentIItem());
 	CWeapon*			pWeapon				= smart_cast<CWeapon*>			(CurrentIItem());
 	CScope*				pScope				= smart_cast<CScope*>			(CurrentIItem());
 	CSilencer*			pSilencer			= smart_cast<CSilencer*>		(CurrentIItem());
@@ -76,7 +85,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		b_show			= true;
 	}
 	
-	//отсоединение аддонов от вещи
+	//РѕС‚СЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ РѕС‚ РІРµС‰Рё
 	if(pWeapon)
 	{
 		if(pWeapon->GrenadeLauncherAttachable() && pWeapon->IsGrenadeLauncherAttached())
@@ -119,7 +128,7 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		}
 	}
 	
-	//присоединение аддонов к активному слоту (2 или 3)
+	//РїСЂРёСЃРѕРµРґРёРЅРµРЅРёРµ Р°РґРґРѕРЅРѕРІ Рє Р°РєС‚РёРІРЅРѕРјСѓ СЃР»РѕС‚Сѓ (2 РёР»Рё 3)
 	if(pScope)
 	{
 		if(m_pInv->m_slots[PISTOL_SLOT].m_pIItem != NULL &&
@@ -183,7 +192,12 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		UIPropertiesBox.AddItem(_action,  NULL, INVENTORY_EAT_ACTION);
 		b_show			= true;
 	}
-
+	
+	if (pArtefact && pArtefact->CanBeActivated())
+	{
+		UIPropertiesBox.AddItem("st_activate_artefact", NULL, INVENTORY_ACTIVATE_ARTEFACT_ACTION);
+		b_show			= true;
+	}
 	bool disallow_drop	= (pOutfit&&bAlreadyDressed);
 	disallow_drop		|= !!CurrentIItem()->IsQuestItem();
 
@@ -248,6 +262,9 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			break;
 		case INVENTORY_DETACH_GRENADE_LAUNCHER_ADDON:
 			DetachAddon(*(smart_cast<CWeapon*>(CurrentIItem()))->GetGrenadeLauncherName());
+			break;
+		case INVENTORY_ACTIVATE_ARTEFACT_ACTION:
+			Activate_Artefact();
 			break;
 		case INVENTORY_RELOAD_MAGAZINE:
 			(smart_cast<CWeapon*>(CurrentIItem()))->Action(kWPN_RELOAD, CMD_START);

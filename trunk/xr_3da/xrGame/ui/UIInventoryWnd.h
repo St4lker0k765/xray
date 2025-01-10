@@ -110,7 +110,7 @@ protected:
 
 	CUIPropertiesBox			UIPropertiesBox;
 	
-	//информация о персонаже
+	//РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїРµСЂСЃРѕРЅР°Р¶Рµ
 	CUIOutfitInfo				UIOutfitInfo;
 	CUIItemInfo					UIItemInfo;
 
@@ -126,12 +126,14 @@ protected:
 	void						SendEvent_Item2Ruck			(PIItem	pItem);
 	void						SendEvent_Item_Drop			(PIItem	pItem);
 	void						SendEvent_Item_Eat			(PIItem	pItem);
+	void 						SendEvent_ActivateArtefact	(PIItem	pItem);
 	void						SendEvent_ActivateSlot		(PIItem	pItem);
 
 	//---------------------------------------------------------------------
 
 	void						ProcessPropertiesBoxClicked	();
 	void						ActivatePropertiesBox		();
+	void						Activate_Artefact			();
 
 	void						DropCurrentItem				(bool b_all);
 	void						EatItem						(PIItem itm);
