@@ -102,7 +102,7 @@ void CUIMotionIcon::SetLuminosity(float Pos)
 
 void CUIMotionIcon::Update()
 {
-	if(m_bchanged){
+/*	if (m_bchanged) {
 		m_bchanged = false;
 		if( m_npc_visibility.size() )
 		{
@@ -110,7 +110,7 @@ void CUIMotionIcon::Update()
 			SetLuminosity				(m_npc_visibility.back().value);
 		}else
 			SetLuminosity				(m_luminosity_progress.GetRange_min() );
-	}
+	}*/
 	inherited::Update();
 	
 	//m_luminosity_progress 
@@ -132,7 +132,7 @@ void CUIMotionIcon::Update()
 
 void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
 {
-	float v		= float(m_luminosity_progress.GetRange_max() - m_luminosity_progress.GetRange_min());
+/*	float v = float(m_luminosity_progress.GetRange_max() - m_luminosity_progress.GetRange_min());
 	value		*= v;
 	value		+= m_luminosity_progress.GetRange_min();
 
@@ -157,5 +157,5 @@ void CUIMotionIcon::SetActorVisibility		(u16 who_id, float value)
 		(*it).value				= value;
 	}
 
-	m_bchanged = true;
+	m_bchanged = true;*/
 }

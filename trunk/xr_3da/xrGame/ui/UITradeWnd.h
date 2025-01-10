@@ -53,7 +53,7 @@ protected:
 
 	void				PerformTrade				();
 	void				UpdatePrices				();
-	void				ColorizeItem				(CUICellItem* itm, bool b);
+	void				ColorizeItem				(CUICellItem* itm, bool b, TIItemContainer::iterator it);
 
 	enum EListType{eNone,e1st,e2nd,eBoth};
 	void				UpdateLists					(EListType);
@@ -64,7 +64,7 @@ protected:
 
 	bool				CanMoveToOther				(PIItem pItem);
 
-	//указатели игрока и того с кем торгуем
+	//СѓРєР°Р·Р°С‚РµР»Рё РёРіСЂРѕРєР° Рё С‚РѕРіРѕ СЃ РєРµРј С‚РѕСЂРіСѓРµРј
 	CInventory*			m_pInv;
 	CInventory*			m_pOthersInv;
 	CInventoryOwner*	m_pInvOwner;
