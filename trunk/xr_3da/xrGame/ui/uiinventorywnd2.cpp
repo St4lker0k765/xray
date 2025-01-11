@@ -63,13 +63,33 @@ void CUIInventoryWnd::InitInventory()
 	SetCurrentItem				(NULL);
 
 	//Slots
-	PIItem _itm							= m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
+	PIItem _itm							= m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIKnifeList->SetItem			(itm);
+	}
+
+	_itm								= m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
 	if(_itm)
 	{
 		CUICellItem* itm				= create_cell_item(_itm);
 		m_pUIPistolList->SetItem		(itm);
 	}
 
+	_itm								= m_pInv->m_slots[GRENADE_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIGrenadeList->SetItem		(itm);
+	}
+
+	_itm								= m_pInv->m_slots[APPARATUS_SLOT].m_pIItem;
+	if(_itm)
+	{
+		CUICellItem* itm				= create_cell_item(_itm);
+		m_pUIBinocularList->SetItem		(itm);
+	}
 
 	_itm								= m_pInv->m_slots[RIFLE_SLOT].m_pIItem;
 	if(_itm)
@@ -334,12 +354,23 @@ CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return NULL;
 	switch (slot_idx)
 	{
+		case KNIFE_SLOT:
+			return m_pUIKnifeList;
+			break;
+
 		case PISTOL_SLOT:
 			return m_pUIPistolList;
 			break;
 
 		case RIFLE_SLOT:
 			return m_pUIAutomaticList;
+			break;
+
+		case GRENADE_SLOT:
+			return m_pUIGrenadeList;
+			break;
+		case APPARATUS_SLOT:
+			return m_pUIBinocularList;
 			break;
 
 		case OUTFIT_SLOT:
@@ -357,6 +388,9 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIBagList->ClearAll					(true);
 	m_pUIBeltList->ClearAll					(true);
 	m_pUIOutfitList->ClearAll				(true);
+	m_pUIKnifeList->ClearAll				(true);
 	m_pUIPistolList->ClearAll				(true);
 	m_pUIAutomaticList->ClearAll			(true);
+	m_pUIBinocularList->ClearAll			(true);
+	m_pUIGrenadeList->ClearAll				(true);
 }

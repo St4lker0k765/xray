@@ -145,6 +145,18 @@ void CUIInventoryWnd::Init()
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_outfit", 0, m_pUIOutfitList);
 	BindDragDropListEnents				(m_pUIOutfitList);
 
+	m_pUIGrenadeList					= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIGrenadeList); m_pUIGrenadeList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx			(uiXml, "dragdrop_grenade", 0, m_pUIGrenadeList);
+	BindDragDropListEnents				(m_pUIGrenadeList);
+
+	m_pUIBinocularList					= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIBinocularList); m_pUIBinocularList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx			(uiXml, "dragdrop_binocular", 0, m_pUIBinocularList);
+	BindDragDropListEnents				(m_pUIBinocularList);
+
+	m_pUIKnifeList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIKnifeList); m_pUIKnifeList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx(uiXml, "dragdrop_knife", 0, m_pUIKnifeList);
+	BindDragDropListEnents(m_pUIKnifeList);
+
 	m_pUIPistolList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIPistolList); m_pUIPistolList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_pistol", 0, m_pUIPistolList);
 	BindDragDropListEnents				(m_pUIPistolList);
@@ -191,6 +203,9 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 	if(l==m_pUIBagList)			return iwBag;
 	if(l==m_pUIBeltList)		return iwBelt;
 
+	if(l==m_pUIKnifeList)		return iwSlot;
+	if(l==m_pUIGrenadeList)		return iwSlot;
+	if(l==m_pUIBinocularList)	return iwSlot;
 	if(l==m_pUIAutomaticList)	return iwSlot;
 	if(l==m_pUIPistolList)		return iwSlot;
 	if(l==m_pUIOutfitList)		return iwSlot;
