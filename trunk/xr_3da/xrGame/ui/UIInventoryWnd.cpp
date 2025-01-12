@@ -33,6 +33,7 @@ using namespace InventoryUtilities;
 #include "UIDragDropListEx.h"
 #include "UIOutfitSlot.h"
 #include "UI3tButton.h"
+#include "UISleepWnd.h"
 
 #define				INVENTORY_ITEM_XML		"inventory_item.xml"
 #define				INVENTORY_XML			"inventory_new.xml"
@@ -75,7 +76,7 @@ void CUIInventoryWnd::Init()
 	AttachChild							(&UIBagWnd);
 	xml_init.InitStatic					(uiXml, "bag_static", 0, &UIBagWnd);
 	
-	AttachChild							(&UIMoneyWnd);
+	UIBagWnd.AttachChild				(&UIMoneyWnd);
 	xml_init.InitStatic					(uiXml, "money_static", 0, &UIMoneyWnd);
 
 	AttachChild							(&UIDescrWnd);
@@ -84,6 +85,12 @@ void CUIInventoryWnd::Init()
 
 	UIDescrWnd.AttachChild				(&UIItemInfo);
 	UIItemInfo.Init						(0, 0, UIDescrWnd.GetWidth(), UIDescrWnd.GetHeight(), INVENTORY_ITEM_XML);
+
+	// Кнопка Drop
+	UIDropButton						= xr_new<CUI3tButton>();
+	UIDropButton->SetAutoDelete			(true);
+	UIDescrWnd.AttachChild				(UIDropButton);
+	xml_init.Init3tButton				(uiXml, "drop_button", 0, UIDropButton);
 
 	AttachChild							(&UIPersonalWnd);
 	xml_init.InitFrameWindow			(uiXml, "character_frame_window", 0, &UIPersonalWnd);
@@ -104,6 +111,9 @@ void CUIInventoryWnd::Init()
 
 	UIProgressBack.AttachChild (&UIProgressBarHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_health", 0, &UIProgressBarHealth);
+
+	UIProgressBack.AttachChild	(&UIProgressBarSatiety);
+	xml_init.InitProgressBar (uiXml, "progress_bar_satiety", 0, &UIProgressBarSatiety);
 	
 	UIProgressBack.AttachChild	(&UIProgressBarPsyHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_psy", 0, &UIProgressBarPsyHealth);
@@ -122,8 +132,13 @@ void CUIInventoryWnd::Init()
 	//Элементы автоматического добавления
 	xml_init.InitAutoStatic				(uiXml, "auto_static", this);
 
-
-	if (GameID() != GAME_SINGLE){
+	if (GameID() == GAME_SINGLE) {
+		UISleepWnd = xr_new<CUISleepWnd>(); UISleepWnd->SetAutoDelete(true);
+		UISleepWnd->Init();
+		xml_init.InitStatic(uiXml, "sleep_window", 0, UISleepWnd);
+		AttachChild(UISleepWnd);
+	}
+	else if (GameID() != GAME_SINGLE){
 		UIRankFrame = xr_new<CUIStatic> (); UIRankFrame->SetAutoDelete(true);
 		UIRank = xr_new<CUIStatic> (); UIRank->SetAutoDelete(true);
 
@@ -266,6 +281,9 @@ void CUIInventoryWnd::Update()
 	{
 		float v = pEntityAlive->conditions().GetHealth()*100.0f;
 		UIProgressBarHealth.SetProgressPos		(v);
+
+		v = Actor()->conditions().GetSatiety() * 100.0f;
+		UIProgressBarSatiety.SetProgressPos(v);
 
 		v = pEntityAlive->conditions().GetPsyHealth()*100.0f;
 		UIProgressBarPsyHealth.SetProgressPos	(v);

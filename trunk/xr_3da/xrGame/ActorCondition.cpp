@@ -44,12 +44,18 @@ CActorCondition::CActorCondition(CActor *object) :
 
 	VERIFY						(object);
 	m_object					= object;
+	m_actor_sleep_wnd			= NULL;
+	m_can_sleep_callback		= NULL;
+	m_get_sleep_video_name_callback	= NULL;
 	m_condition_flags.zero		();
 
 }
 
 CActorCondition::~CActorCondition(void)
 {
+	xr_delete					(m_actor_sleep_wnd);
+	xr_delete					(m_can_sleep_callback);
+	xr_delete					(m_get_sleep_video_name_callback);
 }
 
 void CActorCondition::LoadCondition(LPCSTR entity_section)
@@ -57,6 +63,8 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	inherited::LoadCondition(entity_section);
 
 	LPCSTR						section = READ_IF_EXISTS(pSettings,r_string,entity_section,"condition_sect",entity_section);
+	if (IsGameTypeSingle())
+		m_change_v_sleep.load		(section, "_sleep");
 
 	m_fJumpPower				= pSettings->r_float(section,"jump_power");
 	m_fStandPower				= pSettings->r_float(section,"stand_power");
@@ -68,7 +76,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fAccelK					= pSettings->r_float(section,"accel_k");
 	m_fSprintK					= pSettings->r_float(section,"sprint_k");
 
-	//порог силы и здоровья меньше которого актер начинает хромать
+	//РїРѕСЂРѕРі СЃРёР»С‹ Рё Р·РґРѕСЂРѕРІСЊСЏ РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ Р°РєС‚РµСЂ РЅР°С‡РёРЅР°РµС‚ С…СЂРѕРјР°С‚СЊ
 	m_fLimpingHealthBegin		= pSettings->r_float(section,	"limping_health_begin");
 	m_fLimpingHealthEnd			= pSettings->r_float(section,	"limping_health_end");
 	R_ASSERT					(m_fLimpingHealthBegin<=m_fLimpingHealthEnd);
@@ -86,6 +94,8 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	R_ASSERT					(m_fCantSprintPowerBegin<=m_fCantSprintPowerEnd);
 
 	m_fPowerLeakSpeed			= pSettings->r_float(section,"max_power_leak_speed");
+	if(IsGameTypeSingle())
+		m_fK_SleepMaxPower		= pSettings->r_float(section,"max_power_leak_speed_sleep");
 	
 	m_fV_Alcohol				= pSettings->r_float(section,"alcohol_v");
 
@@ -95,10 +105,27 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	m_fV_SatietyHealth			= pSettings->r_float(section,"satiety_health_v");
 	
 	m_MaxWalkWeight					= pSettings->r_float(section,"max_walk_weight");
+
+	LPCSTR cb_name = READ_IF_EXISTS(pSettings, r_string, section, "can_sleep_callback", "");
+
+	if(cb_name && xr_strlen(cb_name)){
+		m_can_sleep_callback		= xr_new<CScriptCallbackEx<LPCSTR> >();
+		luabind::functor<LPCSTR>		f;
+		R_ASSERT					(ai().script_engine().functor<LPCSTR>(cb_name,f));
+		m_can_sleep_callback->set	(f);
+	}
+	cb_name					= READ_IF_EXISTS(pSettings,r_string,section,"sleep_video_name_callback","");
+
+	if(cb_name && xr_strlen(cb_name)){
+		m_get_sleep_video_name_callback		= xr_new<CScriptCallbackEx<LPCSTR> >();
+		luabind::functor<LPCSTR>			fl;
+		R_ASSERT							(ai().script_engine().functor<LPCSTR>(cb_name,fl));
+		m_get_sleep_video_name_callback->set(fl);
+	}
 }
 
 
-//вычисление параметров с ходом времени
+//РІС‹С‡РёСЃР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ СЃ С…РѕРґРѕРј РІСЂРµРјРµРЅРё
 #include "UI.h"
 #include "HUDManager.h"
 
@@ -202,7 +229,7 @@ void CActorCondition::UpdateSatiety()
 
 	}
 		
-	//сытость увеличивает здоровье только если нет открытых ран
+	//СЃС‹С‚РѕСЃС‚СЊ СѓРІРµР»РёС‡РёРІР°РµС‚ Р·РґРѕСЂРѕРІСЊРµ С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅРµС‚ РѕС‚РєСЂС‹С‚С‹С… СЂР°РЅ
 	if(!m_bIsBleeding)
 	{
 		m_fDeltaHealth += CanBeHarmed() ? 
@@ -210,7 +237,7 @@ void CActorCondition::UpdateSatiety()
 					: 0;
 	}
 
-	//коэффициенты уменьшения восстановления силы от сытоти и радиации
+	//РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ СѓРјРµРЅСЊС€РµРЅРёСЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ СЃРёР»С‹ РѕС‚ СЃС‹С‚РѕС‚Рё Рё СЂР°РґРёР°С†РёРё
 	float radiation_power_k		= 1.f;
 	float satiety_power_k		= 1.f;
 			
@@ -227,7 +254,7 @@ CWound* CActorCondition::ConditionHit(SHit* pHDS)
 	return inherited::ConditionHit(pHDS);
 }
 
-//weight - "удельный" вес от 0..1
+//weight - "СѓРґРµР»СЊРЅС‹Р№" РІРµСЃ РѕС‚ 0..1
 void CActorCondition::ConditionJump(float weight)
 {
 	float power			=	m_fJumpPower;
@@ -298,7 +325,129 @@ bool CActorCondition::IsLimping() const
 		m_bLimping = false;
 	return m_bLimping;
 }
-extern bool g_bShowHudInfo;
+bool CActorCondition::AllowSleep()
+{
+	EActorSleep result = CanSleepHere();
+	return(!stricmp(ACTOR_DEFS::easCanSleepResult, result));
+}
+
+EActorSleep CActorCondition::GoSleep(ALife::_TIME_ID sleep_time, bool without_check)
+{
+	if (IsSleeping()) return ACTOR_DEFS::easCanSleepResult;
+
+	EActorSleep result = without_check ? ACTOR_DEFS::easCanSleepResult : CanSleepHere();
+	if (0 != stricmp(ACTOR_DEFS::easCanSleepResult, result))
+		return result;
+
+	psHUD_Flags.set(HUD_DRAW, false);
+	m_bIsSleeping = true;
+
+	//.	ProcessSleep				(sleep_time);// change conditions
+
+	std::swap(m_change_v_sleep, m_change_v);
+	std::swap(m_fK_SleepMaxPower, m_fPowerLeakSpeed);
+
+
+
+	object().mstate_wishful &= ~mcAnyMove;
+	object().mstate_real &= ~mcAnyMove;
+
+
+	//РїРѕСЃС‚Р°РІРёС‚СЊ Р±СѓРґРёР»СЊРЅРёРє
+	object().m_dwWakeUpTime = Level().GetGameTime() + sleep_time;
+
+	VERIFY(m_object == smart_cast<CActor*>(Level().CurrentEntity()));
+
+	m_object->Cameras().RemovePPEffector(EEffectorPPType(SLEEP_EFFECTOR_TYPE_ID));
+	object().m_pSleepEffectorPP = xr_new<CSleepEffectorPP>(object().m_pSleepEffector->ppi,
+		object().m_pSleepEffector->time,
+		object().m_pSleepEffector->time_attack,
+		object().m_pSleepEffector->time_release);
+
+	m_object->Cameras().AddPPEffector(object().m_pSleepEffectorPP);
+
+	m_object->callback(GameObject::eActorSleep)(m_object->lua_game_object());
+
+
+	m_actor_sleep_wnd = xr_new<CUIActorSleepVideoPlayer>();
+	m_actor_sleep_wnd->Init((*m_get_sleep_video_name_callback)());
+
+	return ACTOR_DEFS::easCanSleepResult;
+}
+
+void CActorCondition::Awoke()
+{
+	if(!IsSleeping())		return;
+
+	m_bIsSleeping			= false;
+
+	std::swap				(m_change_v_sleep,		m_change_v);
+	std::swap				(m_fK_SleepMaxPower,	m_fPowerLeakSpeed);
+
+	if ( ai().get_alife() ) {
+		NET_Packet		P;
+		P.w_begin		(M_SWITCH_DISTANCE);
+		P.w_float		(object().m_fOldOnlineRadius);
+		Level().Send	(P,net_flags(TRUE,TRUE));
+	}
+
+	m_actor_sleep_wnd->DeActivate	();
+	xr_delete						(m_actor_sleep_wnd);
+
+	VERIFY(m_object == smart_cast<CActor*>(Level().CurrentEntity()));
+	VERIFY(object().m_pSleepEffectorPP);
+
+	object().m_pSleepEffectorPP->m_eSleepState = CSleepEffectorPP::AWAKING;
+	object().m_pSleepEffectorPP = NULL;
+
+	psHUD_Flags.set(HUD_DRAW, true);
+	
+}
+
+//РїСЂРѕРІРµСЂРєР° РјРѕР¶РµРј Р»Рё РјС‹ СЃРїР°С‚СЊ РЅР° СЌС‚РѕРј РјРµСЃС‚Рµ
+EActorSleep CActorCondition::CanSleepHere()
+{
+	if( m_can_sleep_callback && *m_can_sleep_callback)
+		return (*m_can_sleep_callback)();
+	
+	R_ASSERT		(0);
+	if(0 != object().mstate_real) return "cant_sleep_not_on_solid_ground";
+
+	collide::rq_result RQ;
+
+	Fvector pos, dir;
+	pos.set(object().Position());
+	pos.y += 0.1f;
+	dir.set(0, -1.f, 0);
+	BOOL				result = 
+		Level().ObjectSpace.RayPick(
+			pos,
+			dir,
+			0.3f, 
+			collide::rqtBoth,
+			RQ,
+			&object()
+		);
+	
+	//Р°РєС‚РµСЂ СЃС‚РѕРёС‚ РЅР° РґРёРЅР°РјРёС‡РµСЃРєРѕРј РѕР±СЉРµРєС‚Рµ РёР»Рё РІРѕРѕР±С‰Рµ РїР°РґР°РµС‚ - 
+	//СЃРїР°С‚СЊ РЅРµР»СЊР·СЏ
+	if(!result || RQ.O)	
+		return "cant_sleep_not_on_solid_ground";
+
+	xr_vector<CObject*> NearestList;	// = Level().ObjectSpace.q_nearest; 
+	Level().ObjectSpace.GetNearest	(NearestList, pos, 20.f, &object()); 
+
+	for(xr_vector<CObject*>::iterator it = NearestList.begin();
+									NearestList.end() != it;
+									it++)
+	{
+		CEntityAlive* entity = smart_cast<CEntityAlive*>(*it);
+		if(entity && entity->g_Alive() && entity->is_relation_enemy(m_object))
+			return "cant_sleep_near_enemies";
+	}
+
+	return easCanSleepResult;
+}
 
 void CActorCondition::save(NET_Packet &output_packet)
 {
@@ -321,6 +470,7 @@ void CActorCondition::reinit	()
 	inherited::reinit	();
 	m_bLimping					= false;
 	m_fSatiety					= 1.f;
+	m_bIsSleeping				= false;
 }
 
 void CActorCondition::ChangeAlcohol	(float value)

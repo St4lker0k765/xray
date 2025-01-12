@@ -1,5 +1,4 @@
 #include "stdafx.h"
-/*
 #include "actor.h"
 #include "SleepEffector.h"
 #include "game_sv_single.h"
@@ -50,7 +49,7 @@ void CActor::UpdateSleep()
 	}
 
 
-	//ðàçáóäèòü àêòåðà, åñëè îí ïðîñïàë ñòîëüêî ñêîëüêî çàäóìàë
+	//Ñ€Ð°Ð·Ð±ÑƒÐ´Ð¸Ñ‚ÑŒ Ð°ÐºÑ‚ÐµÑ€Ð°, ÐµÑÐ»Ð¸ Ð¾Ð½ Ð¿Ñ€Ð¾ÑÐ¿Ð°Ð» ÑÑ‚Ð¾Ð»ÑŒÐºÐ¾ ÑÐºÐ¾Ð»ÑŒÐºÐ¾ Ð·Ð°Ð´ÑƒÐ¼Ð°Ð»
 
 	if(Level().GetGameTime()>m_dwWakeUpTime){
 		Level().Server->game->SetGameTimeFactor(m_fOldTimeFactor);
@@ -58,4 +57,4 @@ void CActor::UpdateSleep()
 		if( !conditions().m_actor_sleep_wnd->IsPlaying())
 			conditions().Awoke();
 	}
-}*/
+}

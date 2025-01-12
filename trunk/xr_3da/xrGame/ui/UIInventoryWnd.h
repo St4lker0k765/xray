@@ -18,6 +18,7 @@ class CArtefact;
 class CUI3tButton;
 class CUIDragDropListEx;
 class CUICellItem;
+class CUISleepWnd;
 
 class CUIInventoryWnd: public CUIDialogWnd
 {
@@ -74,8 +75,10 @@ protected:
 	CUIStatic					UIMoneyWnd;
 	CUIStatic					UIDescrWnd;
 	CUIFrameWindow				UIPersonalWnd;
+	CUISleepWnd*				UISleepWnd;
 
 	CUI3tButton*				UIExitButton;
+	CUI3tButton*				UIDropButton;
 
 	CUIStatic					UIStaticBottom;
 	CUIStatic					UIStaticTime;
@@ -107,6 +110,7 @@ protected:
 	CUIStatic					UIProgressBack;
 	CUIStatic					UIProgressBack_rank;
 	CUIProgressBar				UIProgressBarHealth;	
+	CUIProgressBar				UIProgressBarSatiety;
 	CUIProgressBar				UIProgressBarPsyHealth;
 	CUIProgressBar				UIProgressBarRadiation;
 	CUIProgressBar				UIProgressBarRank;

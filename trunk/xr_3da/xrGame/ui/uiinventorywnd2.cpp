@@ -7,11 +7,14 @@
 #include "../hudmanager.h"
 #include "../inventory.h"
 #include "UIInventoryUtilities.h"
-
+#include "../inventory_item.h"
+#include "../string_table.h"
 #include "UICellItem.h"
 #include "UICellItemFactory.h"
 #include "UIDragDropListEx.h"
 #include "UI3tButton.h"
+#include "UISleepWnd.h"
+#include "../game_cl_base.h"
 
 CUICellItem* CUIInventoryWnd::CurrentItem()
 {
@@ -35,8 +38,28 @@ void CUIInventoryWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 	if(pWnd == &UIPropertiesBox &&	msg==PROPERTY_CLICKED)
 	{
 		ProcessPropertiesBoxClicked	();
-	}else 
-	if (UIExitButton == pWnd && BUTTON_CLICKED == msg)
+	}
+	else if (pWnd == UISleepWnd && msg == SLEEP_WND_PERFORM_BUTTON_CLICKED)
+	{
+		CActor* pActor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (!pActor) return;
+
+		if (GameID() != GAME_SINGLE)
+			return;
+
+		bool b = pActor->conditions().AllowSleep();
+		ACTOR_DEFS::EActorSleep result = pActor->conditions().GoSleep(*reinterpret_cast<u32*>(pData));
+
+		if (!b)
+			HUD().GetUI()->AddInfoMessage(result);
+
+		Game().StartStopMenu(this, true);
+	}
+	else if (UIDropButton == pWnd && BUTTON_CLICKED == msg)
+	{
+		DropCurrentItem(true);
+	}
+	else if (UIExitButton == pWnd && BUTTON_CLICKED == msg)
 	{
 		GetHolder()->StartStopMenu			(this,true);
 	}

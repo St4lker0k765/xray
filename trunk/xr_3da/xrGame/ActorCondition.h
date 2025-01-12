@@ -1,4 +1,4 @@
-// ActorCondition.h: класс состояния игрока
+// ActorCondition.h: РєР»Р°СЃСЃ СЃРѕСЃС‚РѕСЏРЅРёСЏ РёРіСЂРѕРєР°
 //
 
 #pragma once
@@ -12,7 +12,7 @@ class CScriptCallbackEx;
 
 
 class CActor;
-//class CUIActorSleepVideoPlayer;
+class CUIActorSleepVideoPlayer;
 
 class CActorCondition: public CEntityCondition {
 private:
@@ -29,6 +29,8 @@ private:
 	Flags16											m_condition_flags;
 private:
 	CActor*											m_object;
+	CScriptCallbackEx<LPCSTR>*						m_can_sleep_callback;
+	CScriptCallbackEx<LPCSTR>*						m_get_sleep_video_name_callback;
 	void				UpdateTutorialThresholds	();
 	void 				UpdateSatiety				();
 public:
@@ -44,7 +46,15 @@ public:
 	virtual void 		ChangeAlcohol				(float value);
 	virtual void 		ChangeSatiety				(float value);
 
-	// хромание при потере сил и здоровья
+	bool				IsSleeping() { return m_bIsSleeping; }
+
+	// sleeping
+	bool						AllowSleep();
+	ACTOR_DEFS::EActorSleep		CanSleepHere();
+	ACTOR_DEFS::EActorSleep		GoSleep(ALife::_TIME_ID sleep_time, bool without_check = false);
+	void				Awoke();
+
+	// С…СЂРѕРјР°РЅРёРµ РїСЂРё РїРѕС‚РµСЂРµ СЃРёР» Рё Р·РґРѕСЂРѕРІСЊСЏ
 	virtual	bool		IsLimping					() const;
 	virtual bool		IsCantWalk					() const;
 	virtual bool		IsCantWalkWeight			();
@@ -67,6 +77,7 @@ public:
 	virtual void			save					(NET_Packet &output_packet);
 	virtual void			load					(IReader &input_packet);
 
+	CUIActorSleepVideoPlayer*	m_actor_sleep_wnd;
 protected:
 	float m_fAlcohol;
 	float m_fV_Alcohol;
@@ -90,11 +101,16 @@ protected:
 	
 	float	m_MaxWalkWeight;
 
+	//СЃРѕСЃС‚РѕСЏРЅРёРµ СЃРЅР°
+	bool m_bIsSleeping;
+	SConditionChangeV m_change_v_sleep;
+
+	float m_fK_SleepMaxPower;
 	mutable bool m_bLimping;
 	mutable bool m_bCantWalk;
 	mutable bool m_bCantSprint;
 
-	//порог силы и здоровья меньше которого актер начинает хромать
+	//РїРѕСЂРѕРі СЃРёР»С‹ Рё Р·РґРѕСЂРѕРІСЊСЏ РјРµРЅСЊС€Рµ РєРѕС‚РѕСЂРѕРіРѕ Р°РєС‚РµСЂ РЅР°С‡РёРЅР°РµС‚ С…СЂРѕРјР°С‚СЊ
 	float m_fLimpingPowerBegin;
 	float m_fLimpingPowerEnd;
 	float m_fCantWalkPowerBegin;

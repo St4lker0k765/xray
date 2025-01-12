@@ -23,14 +23,14 @@ CGameFont* GetFontMedium()
 CGameFont* GetFontDI()
 {return mngr().pFontDI;}
 /*
-	//заголовочный шрифт
+	//Р·Р°РіРѕР»РѕРІРѕС‡РЅС‹Р№ С€СЂРёС„С‚
 CGameFont* GetFontHeaderRussian()
 {return mngr().pFontHeaderRussian;}
 
 CGameFont* GetFontHeaderEurope()
 {return mngr().pFontHeaderEurope;}
 */
-//шрифты для интерфейса
+//С€СЂРёС„С‚С‹ РґР»СЏ РёРЅС‚РµСЂС„РµР№СЃР°
 CGameFont* GetFontGraffiti19Russian()
 {return mngr().pFontGraffiti19Russian;}
 CGameFont* GetFontGraffiti22Russian()
@@ -265,7 +265,7 @@ void CUIWindow::script_register(lua_State *L)
 				value("TRADE_WND_CLOSED",							int(TRADE_WND_CLOSED)),
 
 	// CUISleepWnd
-//				value("SLEEP_WND_PERFORM_BUTTON_CLICKED",			int(SLEEP_WND_PERFORM_BUTTON_CLICKED)),
+				value("SLEEP_WND_PERFORM_BUTTON_CLICKED",			int(SLEEP_WND_PERFORM_BUTTON_CLICKED)),
 
 	// CUIOutfitSlot
 				value("UNDRESS_OUTFIT",								int(UNDRESS_OUTFIT)),
