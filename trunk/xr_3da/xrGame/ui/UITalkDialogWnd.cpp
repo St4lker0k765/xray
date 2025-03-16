@@ -50,12 +50,12 @@ void CUITalkDialogWnd::Init(float x, float y, float width, float height)
 
 	//основной фрейм диалога
 	AttachChild					(&UIDialogFrame);
-	CUIXmlInit::InitFrameWindow	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
-	UIDialogFrame.UITitleText->SetElipsis(CUIStatic::eepEnd, 10);
+	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 0, &UIDialogFrame);
+	UIDialogFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 	// Фрейм с нащими фразами
 	AttachChild					(&UIOurPhrasesFrame);
-	CUIXmlInit::InitFrameWindow	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
-	UIOurPhrasesFrame.UITitleText->SetElipsis(CUIStatic::eepEnd, 10);
+	CUIXmlInit::InitFrameLine	(*m_uiXml, "frame_line_window", 1, &UIOurPhrasesFrame);
+	UIOurPhrasesFrame.UITitleText.SetElipsis(CUIStatic::eepEnd, 10);
 
 	//Ответы
 	UIAnswersList				= xr_new<CUIScrollView>();

@@ -3,7 +3,7 @@
 
 #include "UIStatic.h"
 #include "UI3tButton.h"
-#include "UIFrameWindow.h"
+#include "UIFrameLineWnd.h"
 
 #include "../InfoPortion.h"
 
@@ -41,8 +41,8 @@ public:
 	//список вопросов, которые мы можем задавать персонажу
 
 	//элементы интерфейса диалога
-	CUIFrameWindow		UIDialogFrame;
-	CUIFrameWindow		UIOurPhrasesFrame;
+	CUIFrameLineWnd		UIDialogFrame;
+	CUIFrameLineWnd		UIOurPhrasesFrame;
 
 	CUIStatic			UIStaticTop;
 	CUIStatic			UIStaticBottom;
