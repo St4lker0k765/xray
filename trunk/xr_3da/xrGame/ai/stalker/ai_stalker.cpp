@@ -104,7 +104,7 @@ void CAI_Stalker::reinit			()
 	animation().reinit				();
 	movement().reinit				();
 
-	//загрузка спецевической звуковой схемы для сталкера согласно m_SpecificCharacter
+	//Р·Р°РіСЂСѓР·РєР° СЃРїРµС†РµРІРёС‡РµСЃРєРѕР№ Р·РІСѓРєРѕРІРѕР№ СЃС…РµРјС‹ РґР»СЏ СЃС‚Р°Р»РєРµСЂР° СЃРѕРіР»Р°СЃРЅРѕ m_SpecificCharacter
 	sound().sound_prefix			(SpecificCharacter().sound_voice_prefix());
 
 #ifdef DEBUG_MEMORY_MANAGER
@@ -286,7 +286,7 @@ void CAI_Stalker::Die				(CObject* who)
 
 	inherited::Die					(who);
 	
-	//запретить использование слотов в инвенторе
+	//Р·Р°РїСЂРµС‚РёС‚СЊ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ СЃР»РѕС‚РѕРІ РІ РёРЅРІРµРЅС‚РѕСЂРµ
 	inventory().SetSlotsUseful		(false);
 
 	if (inventory().GetActiveSlot() >= inventory().m_slots.size())
@@ -384,7 +384,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 	if (!g_Alive())
 		sound().set_sound_mask(u32(eStalkerSoundMaskDie));
 
-	//загрузить иммунитеты из модельки сталкера
+	//Р·Р°РіСЂСѓР·РёС‚СЊ РёРјРјСѓРЅРёС‚РµС‚С‹ РёР· РјРѕРґРµР»СЊРєРё СЃС‚Р°Р»РєРµСЂР°
 	CKinematics* pKinematics = smart_cast<CKinematics*>(Visual()); VERIFY(pKinematics);
 	CInifile* ini = pKinematics->LL_UserData();
 	if(ini)
@@ -401,7 +401,7 @@ BOOL CAI_Stalker::net_Spawn			(CSE_Abstract* DC)
 		}
 	}
 
-	//вычислить иммунета в зависимости от ранга
+	//РІС‹С‡РёСЃР»РёС‚СЊ РёРјРјСѓРЅРµС‚Р° РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂР°РЅРіР°
 	static float novice_rank_immunity			= pSettings->r_float("ranks_properties", "immunities_novice_k");
 	static float expirienced_rank_immunity		= pSettings->r_float("ranks_properties", "immunities_experienced_k");
 
@@ -509,10 +509,10 @@ void CAI_Stalker::net_Export		(NET_Packet& P)
 	P.w_u32							(N.dwTimeStamp);
 	P.w_u8							(0);
 	P.w_vec3						(N.p_pos);
-	P.w_float /*w_angle8*/						(N.o_model);
-	P.w_float /*w_angle8*/						(N.o_torso.yaw);
-	P.w_float /*w_angle8*/						(N.o_torso.pitch);
-	P.w_float /*w_angle8*/						(N.o_torso.roll);
+	P.w_angle8						(N.o_model);
+	P.w_angle8						(N.o_torso.yaw);
+	P.w_angle8						(N.o_torso.pitch);
+	P.w_angle8						(N.o_torso.roll);
 	P.w_u8							(u8(g_Team()));
 	P.w_u8							(u8(g_Squad()));
 	P.w_u8							(u8(g_Group()));
@@ -556,10 +556,10 @@ void CAI_Stalker::net_Import		(NET_Packet& P)
 	P.r_u32							(N.dwTimeStamp);
 	P.r_u8							(flags);
 	P.r_vec3						(N.p_pos);
-	P.r_float /*r_angle8*/						(N.o_model);
-	P.r_float /*r_angle8*/						(N.o_torso.yaw);
-	P.r_float /*r_angle8*/						(N.o_torso.pitch);
-	P.r_float /*r_angle8*/						(N.o_torso.roll	);
+	P.r_angle8						(N.o_model);
+	P.r_angle8						(N.o_torso.yaw);
+	P.r_angle8						(N.o_torso.pitch);
+	P.r_angle8						(N.o_torso.roll	);
 	id_Team							= P.r_u8();
 	id_Squad						= P.r_u8();
 	id_Group						= P.r_u8();

@@ -245,10 +245,10 @@ void CCustomMonster::net_Export(NET_Packet& P)					// export to server
 	P.w_u32					(N.dwTimeStamp);
 	P.w_u8					(0);
 	P.w_vec3				(N.p_pos);
-	P.w_float /*w_angle8*/				(N.o_model);
-	P.w_float /*w_angle8*/				(N.o_torso.yaw);
-	P.w_float /*w_angle8*/				(N.o_torso.pitch);
-	P.w_float /*w_angle8*/				(N.o_torso.roll);
+	P.w_angle8				(N.o_model);
+	P.w_angle8				(N.o_torso.yaw);
+	P.w_angle8				(N.o_torso.pitch);
+	P.w_angle8				(N.o_torso.roll);
 	P.w_u8					(u8(g_Team()));
 	P.w_u8					(u8(g_Squad()));
 	P.w_u8					(u8(g_Group()));
@@ -268,10 +268,10 @@ void CCustomMonster::net_Import(NET_Packet& P)
 	P.r_u32					(N.dwTimeStamp);
 	P.r_u8					(flags);
 	P.r_vec3				(N.p_pos);
-	P.r_float /*r_angle8*/				(N.o_model);
-	P.r_float /*r_angle8*/				(N.o_torso.yaw);
-	P.r_float /*r_angle8*/				(N.o_torso.pitch);
-	P.r_float /*r_angle8*/				(N.o_torso.roll	);
+	P.r_angle8				(N.o_model);
+	P.r_angle8				(N.o_torso.yaw);
+	P.r_angle8				(N.o_torso.pitch);
+	P.r_angle8				(N.o_torso.roll	);
 
 	id_Team					= P.r_u8();
 	id_Squad				= P.r_u8();
@@ -347,7 +347,7 @@ void CCustomMonster::shedule_Update	( u32 DT )
 			//////////////////////////////////////
 			//Fvector C; float R;
 			//////////////////////////////////////
-			// С Олеся - ПИВО!!!! (Диме :-))))
+			// РЎ РћР»РµСЃСЏ - РџРР’Рћ!!!! (Р”РёРјРµ :-))))
 			// m_PhysicMovementControl->GetBoundingSphere	(C,R);
 			//////////////////////////////////////
 			//Center(C);
@@ -779,12 +779,12 @@ void CCustomMonster::PitchCorrection()
 	Fvector position_on_plane;
 	P.project(position_on_plane,Position());
 
-	// находим проекцию точки, лежащей на векторе текущего направления
+	// РЅР°С…РѕРґРёРј РїСЂРѕРµРєС†РёСЋ С‚РѕС‡РєРё, Р»РµР¶Р°С‰РµР№ РЅР° РІРµРєС‚РѕСЂРµ С‚РµРєСѓС‰РµРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	Fvector dir_point, proj_point;
 	dir_point.mad(position_on_plane, Direction(), 1.f);
 	P.project(proj_point,dir_point);
 	
-	// получаем искомый вектор направления
+	// РїРѕР»СѓС‡Р°РµРј РёСЃРєРѕРјС‹Р№ РІРµРєС‚РѕСЂ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 	Fvector target_dir;
 	target_dir.sub(proj_point,position_on_plane);
 
@@ -1072,7 +1072,7 @@ void CCustomMonster::OnRender()
 				const DetailPathManager::STravelPathPoint&	N2 = path[I];	Fvector	P2; P2.set(N2.position); P2.y+=0.1f;
 				if (!fis_zero(P1.distance_to_sqr(P2),EPS_L))
 					Level().debug_renderer().draw_line			(Fidentity,P1,P2,color0);
-				if ((path.size() - 1) == I) // песледний box?
+				if ((path.size() - 1) == I) // РїРµСЃР»РµРґРЅРёР№ box?
 					Level().debug_renderer().draw_aabb			(P1,radius0,radius0,radius0,color1);
 				else 
 					Level().debug_renderer().draw_aabb			(P1,radius0,radius0,radius0,color2);
